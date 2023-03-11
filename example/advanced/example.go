@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/trapajim/testcraft"
+	"time"
 )
 
-// You can combine multiple factories to create more complex structs.
-// You can also use custom types in your structs.
+// You can combine multiple factories for complex structs .
+// You can also use custom types or embedded structs.
 
 type Score int
 type Book struct {
@@ -19,6 +20,12 @@ type User struct {
 	ID    int
 	Name  string
 	Books []Book
+	Timestamps
+}
+
+type Timestamps struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func main() {
