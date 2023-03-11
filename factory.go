@@ -64,11 +64,17 @@ func (f *Factory[T]) build() (T, error) {
 	t := f.typeOf()
 	v := reflect.New(t)
 	var errs []error
+	tp := v.Interface().(*T)
+	errs = f.applyAttrs(tp, errs)
+	return reflect.Indirect(v).Interface().(T), errors.Join(errs...)
+}
+
+func (f *Factory[T]) applyAttrs(tp *T, errs []error) []error {
 	for _, attr := range f.attrsGen {
-		err := attr(v.Interface().(*T))
+		err := attr(tp)
 		if err != nil {
 			errs = append(errs, err)
 		}
 	}
-	return reflect.Indirect(v).Interface().(T), errors.Join(errs...)
+	return errs
 }

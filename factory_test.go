@@ -98,12 +98,9 @@ func TestFactoryBuild(t *testing.T) {
 		},
 	}
 
-	// Iterate over test cases
 	for i, test := range tests {
-		// Create factory with the test object and attribute generators
-		factory := NewFactory(test.obj).Attr(test.attrsGens...)
 
-		// Build the object and check the result and error status
+		factory := NewFactory(test.obj).Attr(test.attrsGens...)
 		result, err := factory.build()
 		if test.expectFail {
 			if err == nil {
