@@ -18,7 +18,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/trapajim/go-fixtures/datagen"
+	"github.com/trapajim/testcraft/datagen"
 	"github.com/trapajim/testcraft"
 )
 
