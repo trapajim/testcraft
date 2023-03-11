@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/trapajim/testcraft"
+	"log"
 
 	"github.com/trapajim/testcraft/datagen"
 )
@@ -32,18 +33,11 @@ func main() {
 
 	// Build a new User struct
 	user1, err := userFactory.Build()
-	fmt.Println("ID:", user1.ID, "Name:", user1.Name, "Books:", user1.Books)
+	log.Println("ID:", user1.ID, "Name:", user1.Name, "Books:", user1.Books)
 	if err != nil {
-		// Handle the error
+		log.Fatal(err)
 	}
 	// Build a new User struct MustBuild panics on error
 	user2 := userFactory.MustBuild()
-	fmt.Println("ID:", user2.ID, "Name:", user2.Name, "Books:", user2.Books)
-
-	randUser, err := userFactory.Randomize()
-	if err != nil {
-		// Handle the error
-	}
-	fmt.Println("ID:", randUser.ID, "Name:", randUser.Name, "Books:", randUser.Books)
-
+	log.Println("ID:", user2.ID, "Name:", user2.Name, "Books:", user2.Books)
 }
