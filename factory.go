@@ -28,6 +28,10 @@ func (f *Factory[T]) Attr(attrsGen ...AttrGenerator[T]) *Factory[T] {
 	return f
 }
 
+func (f *Factory[T]) Build() (T, error) {
+	return f.build()
+}
+
 func (f *Factory[T]) MustBuild() T {
 	v, err := f.build()
 	if err != nil {
@@ -36,17 +40,24 @@ func (f *Factory[T]) MustBuild() T {
 	return v
 }
 
-func (f *Factory[T]) Build() (T, error) {
-	return f.build()
-}
-
 func (f *Factory[T]) Randomize() (T, error) {
-	res, err := randomize(f.object, f.valuer)
-	return reflect.Indirect(reflect.ValueOf(res)).Interface().(T), err
+	return f.randomize(false)
 }
 
 func (f *Factory[T]) MustRandomize() T {
-	res, err := randomize(f.object, f.valuer)
+	res, err := f.randomize(false)
+	if err != nil {
+		panic(err)
+	}
+	return reflect.Indirect(reflect.ValueOf(res)).Interface().(T)
+}
+
+func (f *Factory[T]) RandomizeWithAttrs() (T, error) {
+	return f.randomize(true)
+}
+
+func (f *Factory[T]) MustRandomizeWithAttrs() T {
+	res, err := f.randomize(true)
 	if err != nil {
 		panic(err)
 	}
@@ -63,13 +74,13 @@ func (f *Factory[T]) typeOf() reflect.Type {
 func (f *Factory[T]) build() (T, error) {
 	t := f.typeOf()
 	v := reflect.New(t)
-	var errs []error
 	tp := v.Interface().(*T)
-	errs = f.applyAttrs(tp, errs)
+	errs := f.applyAttrs(tp)
 	return reflect.Indirect(v).Interface().(T), errors.Join(errs...)
 }
 
-func (f *Factory[T]) applyAttrs(tp *T, errs []error) []error {
+func (f *Factory[T]) applyAttrs(tp *T) []error {
+	var errs []error
 	for _, attr := range f.attrsGen {
 		err := attr(tp)
 		if err != nil {
@@ -77,4 +88,15 @@ func (f *Factory[T]) applyAttrs(tp *T, errs []error) []error {
 		}
 	}
 	return errs
+}
+
+func (f *Factory[T]) randomize(applyAttr bool) (T, error) {
+	res, err := randomize(f.object, f.valuer)
+	if err != nil {
+		return reflect.Indirect(reflect.ValueOf(res)).Interface().(T), err
+	}
+	if applyAttr {
+		f.applyAttrs(res.(*T))
+	}
+	return reflect.Indirect(reflect.ValueOf(res)).Interface().(T), err
 }

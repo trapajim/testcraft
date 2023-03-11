@@ -145,3 +145,39 @@ func TestFactory_Randomize(t *testing.T) {
 		}
 	}
 }
+
+func TestFactory_RandomizeWithAttrs(t *testing.T) {
+	type Person struct {
+		ID   int
+		Name string
+		Age  int
+	}
+	seq := NewSequencer(1)
+	pFactory := NewFactory(Person{}).Attr(func(p *Person) error {
+		p.ID = seq.Next()
+		return nil
+	})
+	p1 := pFactory.MustRandomizeWithAttrs()
+	p2 := pFactory.MustRandomizeWithAttrs()
+	if p1.ID != 1 {
+		t.Errorf("Expected p1.ID to be 1, got %d", p1.ID)
+	}
+	if p2.ID != 2 {
+		t.Errorf("Expected p2.ID to be 2, got %d", p2.ID)
+	}
+
+	p3, err := pFactory.RandomizeWithAttrs()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	p4, err := pFactory.RandomizeWithAttrs()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if p3.ID != 3 {
+		t.Errorf("Expected p3.ID to be 3, got %d", p3.ID)
+	}
+	if p4.ID != 4 {
+		t.Errorf("Expected p4.ID to be 4, got %d", p4.ID)
+	}
+}
