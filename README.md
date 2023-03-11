@@ -79,6 +79,28 @@ Output:
 ID: 32 Name: agree pedal Books: [cool egg fish apple advise rich]
 ```
 
+if you need some control over the randomized data, you can use the `RandomizerWithAttrs` this will apply the attributes you defined and randomize the rest of the struct.
+
+```go
+userSeq := testcraft.NewSequencer(1)
+userFact := testcraft.NewFactory(User{}).Attr(func(u *User) error {
+    u.ID = userSeq.Next()
+    return nil
+})
+randomUser1, _ := userFact.RandomizeWithAttrs()
+randomUser2, _ := userFact.RandomizeWithAttrs()
+fmt.Println("ID:", randomUser1.ID, "Name:", randomUser1.Name, "Books:", randomUser1.Books)
+fmt.Println("ID:", randomUser2.ID, "Name:", randomUser2.Name, "Books:", randomUser2.Books)
+
+```
+Output:
+```bash
+ID: 1 Name: plain lucky Books: [new embarrass plain best analyse hum]
+ID: 2 Name: analyse new Books: [quince soft lemon new rich mild]
+```
+Each of the functions can be prefixed with `Must` to panic on error.
+
+
 The randomizer has a set of default rules for various types:
 
 | Type | Rule |

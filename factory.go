@@ -15,6 +15,7 @@ type Factory[T any] struct {
 	t        reflect.Type
 }
 
+// NewFactory creates a new factory for the given object.
 func NewFactory[T any](object T) *Factory[T] {
 	return &Factory[T]{
 		object:   object,
@@ -23,15 +24,18 @@ func NewFactory[T any](object T) *Factory[T] {
 	}
 }
 
+// Attr adds an attribute generator to the factory.
 func (f *Factory[T]) Attr(attrsGen ...AttrGenerator[T]) *Factory[T] {
 	f.attrsGen = append(f.attrsGen, attrsGen...)
 	return f
 }
 
+// Build creates a new instance of the object with the given attributes.
 func (f *Factory[T]) Build() (T, error) {
 	return f.build()
 }
 
+// MustBuild creates a new instance of the object with the given attributes and panics on error.
 func (f *Factory[T]) MustBuild() T {
 	v, err := f.build()
 	if err != nil {
@@ -40,10 +44,12 @@ func (f *Factory[T]) MustBuild() T {
 	return v
 }
 
+// Randomize creates a new instance of the object with random values.
 func (f *Factory[T]) Randomize() (T, error) {
 	return f.randomize(false)
 }
 
+// MustRandomize creates a new instance of the object with random values and panics on error.
 func (f *Factory[T]) MustRandomize() T {
 	res, err := f.randomize(false)
 	if err != nil {
@@ -52,10 +58,12 @@ func (f *Factory[T]) MustRandomize() T {
 	return reflect.Indirect(reflect.ValueOf(res)).Interface().(T)
 }
 
+// RandomizeWithAttrs creates a new instance of the object with random values and applies given attributes.
 func (f *Factory[T]) RandomizeWithAttrs() (T, error) {
 	return f.randomize(true)
 }
 
+// MustRandomizeWithAttrs creates a new instance of the object with random values and applies given attributes and panics on error.
 func (f *Factory[T]) MustRandomizeWithAttrs() T {
 	res, err := f.randomize(true)
 	if err != nil {
