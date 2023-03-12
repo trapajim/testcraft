@@ -1,4 +1,7 @@
 # TestCraft
+[![Go Reference](https://pkg.go.dev/badge/github.com/trapajim/testcraft.svg)](https://pkg.go.dev/github.com/trapajim/testcraft)
+[![Go Report Card](https://goreportcard.com/badge/github.com/trapajim/testcraft)](https://goreportcard.com/report/github.com/trapajim/testcraft)
+
 TestCraft is a Go library for filling your structs with test data. 
 You can either define attributes for your structs or randomize them. 
 
