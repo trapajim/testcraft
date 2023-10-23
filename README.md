@@ -50,13 +50,13 @@ func main() {
 
 	// Build a new User struct
 	user1, err := userFactory.Build()
-	fmt.Println("ID:", user1.ID, "Name:", user1.Name)
+	fmt.Println("ID:", user1.ID, "Name:", user1.Name, "Books:", user1.Books)
 	if err != nil {
 		// Handle the error
 	}
 	// Build a new User struct MustBuild panics on error
 	user2 := userFactory.MustBuild()
-	fmt.Println("ID:", user2.ID, "Name:", user2.Name)
+	fmt.Println("ID:", user2.ID, "Name:", user2.Name, "Book:", user2.Books)
 	
 	
 }
@@ -65,7 +65,7 @@ func main() {
 Output:
 ```bash
 ID: 1 Name: yUKW9 Books: [book 0 book 1 book 2 book 3 book 4]
-ID: 2 Name: jXZ816KH [book 0 book 1 book 2 book 3 book 4]
+ID: 2 Name: jXZ816KH Books: [book 0 book 1 book 2 book 3 book 4]
 ```
 
 TestCraft can create random data for your structs
