@@ -30,6 +30,14 @@ func (f *Factory[T]) Attr(attrsGen ...AttrGenerator[T]) *Factory[T] {
 	return f
 }
 
+// With returns a new factory with the given traits applied.
+// The original factory is not affected.
+func (f *Factory[T]) With(trait ...AttrGenerator[T]) *Factory[T] {
+	clone := f.clone()
+	clone.attrsGen = append(clone.attrsGen, trait...)
+	return clone
+}
+
 // Build creates a new instance of the object with the given attributes.
 func (f *Factory[T]) Build() (T, error) {
 	return f.build()
@@ -107,4 +115,16 @@ func (f *Factory[T]) randomize(applyAttr bool) (T, error) {
 		f.applyAttrs(res.(*T))
 	}
 	return reflect.Indirect(reflect.ValueOf(res)).Interface().(T), err
+}
+
+func (f *Factory[T]) clone() *Factory[T] {
+	newAttrs := make([]AttrGenerator[T], len(f.attrsGen))
+	copy(newAttrs, f.attrsGen)
+	return &Factory[T]{
+		object:   f.object,
+		sequence: make(map[string]int),
+		valuer:   f.valuer,
+		t:        f.t,
+		attrsGen: newAttrs,
+	}
 }

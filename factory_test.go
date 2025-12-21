@@ -181,3 +181,62 @@ func TestFactory_RandomizeWithAttrs(t *testing.T) {
 		t.Errorf("Expected p4.ID to be 4, got %d", p4.ID)
 	}
 }
+
+func TestFactory_With(t *testing.T) {
+	type Person struct {
+		ID   int
+		Name string
+		Age  int
+	}
+	personTraits := struct {
+		Senior AttrGenerator[Person]
+		Junior AttrGenerator[Person]
+		Steve  AttrGenerator[Person]
+	}{
+		Senior: func(p *Person) error {
+			p.Age = 65
+			return nil
+		},
+		Junior: func(p *Person) error {
+			p.Age = 18
+			return nil
+		},
+		Steve: func(p *Person) error {
+			p.Name = "Steve"
+			return nil
+		},
+	}
+	factory := NewFactory(Person{}).Attr(func(p *Person) error {
+		p.Name = "John Doe"
+		return nil
+	})
+	t.Run("A single trait", func(t *testing.T) {
+		factory := factory.With(personTraits.Senior)
+		person1 := factory.MustBuild()
+		if person1.Age != 65 {
+			t.Errorf("Expected person1.Age to be 65, got %d", person1.Age)
+		}
+		if person1.Name != "John Doe" {
+			t.Errorf("Expected person1.Name to be John Doe, got %s", person1.Name)
+		}
+	})
+	t.Run("with two traits", func(t *testing.T) {
+		factory := factory.With(personTraits.Junior, personTraits.Steve)
+		person1 := factory.MustBuild()
+		if person1.Age != 18 {
+			t.Errorf("Expected person1.Age to be 18, got %d", person1.Age)
+		}
+		if person1.Name != "Steve" {
+			t.Errorf("Expected person1.Name to be Steve, got %s", person1.Name)
+		}
+	})
+	t.Run("default factory should not be affected", func(t *testing.T) {
+		person1 := factory.MustBuild()
+		if person1.Name != "John Doe" {
+			t.Errorf("Expected person1.Name to be John Doe, got %s", person1.Name)
+		}
+		if person1.Age != 0 {
+			t.Errorf("Expected person1.Age to be 0, got %d", person1.Age)
+		}
+	})
+}

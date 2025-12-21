@@ -103,6 +103,50 @@ ID: 2 Name: analyse new Books: [quince soft lemon new rich mild]
 ```
 Each of the functions can be prefixed with `Must` to panic on error.
 
+## Traits
+
+Traits allow you to create factory variants with predefined attribute overrides. Use `With()` to apply traits without modifying the original factory:
+
+```go
+type Person struct {
+    Name string
+    Age  int
+    Role string
+}
+
+// Define traits as attribute generators
+var (
+    Senior = func(p *Person) error {
+        p.Age = 65
+        return nil
+    }
+    Admin = func(p *Person) error {
+        p.Role = "admin"
+        return nil
+    }
+)
+
+// Create base factory
+personFactory := testcraft.NewFactory(Person{}).Attr(func(p *Person) error {
+    p.Name = "John Doe"
+    p.Role = "user"
+    return nil
+})
+
+// Apply traits to create variants
+seniorPerson := personFactory.With(Senior).MustBuild()
+fmt.Println(seniorPerson) // {John Doe 65 user}
+
+adminSenior := personFactory.With(Senior, Admin).MustBuild()
+fmt.Println(adminSenior) // {John Doe 65 admin}
+
+// Original factory remains unchanged
+regularPerson := personFactory.MustBuild()
+fmt.Println(regularPerson) // {John Doe 0 user}
+```
+
+Traits are applied after base attributes, so they can override any previously set values. You can combine multiple traits in a single `With()` call or chain them.
+
 
 The randomizer has a set of default rules for various types:
 
